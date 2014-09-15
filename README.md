@@ -1,7 +1,7 @@
 Hacktoolkit for iOS
 ===================
 
-This library project as many useful wrappers, data structures, and reusable components for iOS programming.
+This library project has many useful wrappers, data structures, and reusable components for iOS programming.
 
 ## Requirements
 
