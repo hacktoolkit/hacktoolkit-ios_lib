@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name         = "hacktoolkit-ios_lib"
+  s.name         = "Hacktoolkit"
   s.version      = "0.0.1"
   s.summary      = "Hacktoolkit for iOS"
 
