@@ -6,7 +6,7 @@ This library project has many useful wrappers, data structures, and reusable com
 Currently, CocoaPods does not support Swift source files. To use, add this project as a submodule.
 
 * `git submodule add git@github.com:hacktoolkit/hacktoolkit-ios_lib.git htk`
-* Import the `htk` directory into Xcode.
+* Import the `htk/Hacktoolkit` directory into Xcode.
 
 ## Requirements
 
