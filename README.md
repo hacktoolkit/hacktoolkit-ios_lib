@@ -7,6 +7,9 @@ Currently, CocoaPods does not support Swift source files. To use, add this proje
 
 * `git submodule add git@github.com:hacktoolkit/hacktoolkit-ios_lib.git htk`
 * Import the `htk/Hacktoolkit` directory into Xcode.
+  * `Add Files to "YOURPROJECT"...`
+  * Navigate to and select `htk/Hacktoolkit`
+  * Select `Create groups` for added folders radio
 
 ## Requirements
 
