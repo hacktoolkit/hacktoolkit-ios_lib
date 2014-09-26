@@ -12,6 +12,8 @@ let YELP_API_CONSUMER_SECRET = HTKUtils.getStringFromInfoBundleForKey("YELP_API_
 let YELP_API_TOKEN = HTKUtils.getStringFromInfoBundleForKey("YELP_API_TOKEN")
 let YELP_API_TOKEN_SECRET = HTKUtils.getStringFromInfoBundleForKey("YELP_API_TOKEN_SECRET")
 
+let YELP_API_URL = "http://api.yelp.com/v2/"
+
 class YelpClient: BDBOAuth1RequestOperationManager {
     var accessToken: String!
     var accessSecret: String!
@@ -39,8 +41,8 @@ class YelpClient: BDBOAuth1RequestOperationManager {
     init(consumerKey key: String!, consumerSecret secret: String!, accessToken: String!, accessSecret: String!) {
         self.accessToken = accessToken
         self.accessSecret = accessSecret
-        var baseUrl = NSURL(string: "http://api.yelp.com/v2/")
-        super.init(baseURL: baseUrl, consumerKey: key, consumerSecret: secret);
+        var baseUrl = NSURL(string: YELP_API_URL)
+        super.init(baseURL: baseUrl, consumerKey: key, consumerSecret: secret)
 
         var token = BDBOAuthToken(token: accessToken, secret: accessSecret, expiration: nil)
         self.requestSerializer.saveAccessToken(token)
