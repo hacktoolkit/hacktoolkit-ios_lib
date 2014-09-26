@@ -15,6 +15,9 @@ Currently, CocoaPods does not support Swift source files. To use, add this proje
 
 * N/A
 
-## Sample Projects built using Hacktoolkit for iOS
+## Sample Projects using Hacktoolkit for iOS
 
-* TBD
+* [Twitter Client](https://github.com/hacktoolkit/htk-ios-Twitter)
+* [Yelp Client](https://github.com/hacktoolkit/htk-ios-Yelp)
+* [Rotten Tomatoes Client](https://github.com/hacktoolkit/htk-ios-RottenTomatoes)
+* [Tip Calculator](https://github.com/hacktoolkit/htk-ios-TipCalculator)
