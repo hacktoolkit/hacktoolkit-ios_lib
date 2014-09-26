@@ -7,6 +7,8 @@
 
 import Foundation
 
+let ROTTEN_TOMATOES_API_KEY = HTKUtils.getStringFromInfoBundleForKey("ROTTEN_TOMATOES_API_KEY")
+
 let ROTTEN_TOMATOES_API_BOX_OFFICE_MOVIES_URL = "http://api.rottentomatoes.com/api/public/v1.0/lists/movies/box_office.json?apikey=\(ROTTEN_TOMATOES_API_KEY)&limit=30&country=us"
 let ROTTEN_TOMATOES_API_TOP_RENTALS_URL = "http://api.rottentomatoes.com/api/public/v1.0/lists/dvds/top_rentals.json?apikey=\(ROTTEN_TOMATOES_API_KEY)&limit=30"
 
@@ -39,7 +41,11 @@ class RottenTomatoesClient {
                     let movie = RottenTomatoesClient.getMovieInstance(movieDictionary as NSDictionary)
                     return movie
                 })
-                callback(movies!)
+                if movies != nil {
+                    callback(movies!)
+                } else {
+                    HTKNotificationUtils.displayNetworkErrorMessage()
+                }
             } else {
                 HTKNotificationUtils.displayNetworkErrorMessage()
             }

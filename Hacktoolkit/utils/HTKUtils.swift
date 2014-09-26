@@ -20,6 +20,12 @@ class HTKUtils {
         var value: AnyObject? = defaults.objectForKey(key)
         return value
     }
+
+    class func getStringFromInfoBundleForKey(key: String) -> String {
+        var value = NSBundle.mainBundle().objectForInfoDictionaryKey(key) as? String
+        println("value: \(value)")
+        return value ?? ""
+    }
     
     class func formatCurrency(amount: Double) -> String {
         var numberFormatter = NSNumberFormatter()
