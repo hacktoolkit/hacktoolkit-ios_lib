@@ -26,6 +26,7 @@ class YelpBusinessResult {
 
     var categories: [YelpCategory]!
     var rating: Int!
+    var ratingImageUrl: String!
     var reviewCount: Int!
 
     init(businessDict: NSDictionary) {
@@ -54,6 +55,7 @@ class YelpBusinessResult {
         })
         self.categories = categories
         self.rating = businessDict["rating"] as? Int
+        self.ratingImageUrl = businessDict["rating_img_url"] as? String
         self.reviewCount = businessDict["review_count"] as? Int
     }
 
