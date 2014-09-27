@@ -48,8 +48,8 @@ class YelpBusinessResult {
         //        self.url = businessDict["url"] as String
         //        self.mobileUrl = businessDict["mobile_url"] as String
 
-        var categoriesArray = businessDict["categories"] as? [NSArray]
-        var categories = categoriesArray?.map({
+        var categoriesArray = businessDict["categories"] as? [NSArray] ?? [NSArray]()
+        var categories = categoriesArray.map({
             (categoryArray: NSArray) -> YelpCategory in
             YelpCategory(categoryArray: categoryArray)
         })
