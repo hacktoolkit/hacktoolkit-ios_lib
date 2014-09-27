@@ -14,7 +14,7 @@ class HTKUtils {
         defaults.setObject(value, forKey: key)
         defaults.synchronize()
     }
-    
+
     class func getDefaults(key: String) -> AnyObject? {
         var defaults = NSUserDefaults.standardUserDefaults()
         var value: AnyObject? = defaults.objectForKey(key)
@@ -25,7 +25,7 @@ class HTKUtils {
         var value = NSBundle.mainBundle().objectForInfoDictionaryKey(key) as? String
         return value ?? ""
     }
-    
+
     class func formatCurrency(amount: Double) -> String {
         var numberFormatter = NSNumberFormatter()
         numberFormatter.numberStyle = NSNumberFormatterStyle.CurrencyStyle

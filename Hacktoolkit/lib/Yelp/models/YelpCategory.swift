@@ -7,6 +7,8 @@
 
 import Foundation
 
+// http://www.yelp.com/developers/documentation/v2/all_category_list
+
 class YelpCategory {
     var categoryName: String!
     var categoryKey: String!
