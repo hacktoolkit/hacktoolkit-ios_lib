@@ -12,11 +12,20 @@ let TWITTER_API_CONSUMER_SECRET = HTKUtils.getStringFromInfoBundleForKey("TWITTE
 let TWITTER_API_TOKEN = HTKUtils.getStringFromInfoBundleForKey("TWITTER_API_TOKEN")
 let TWITTER_API_TOKEN_SECRET = HTKUtils.getStringFromInfoBundleForKey("TWITTER_API_TOKEN_SECRET")
 
-let TWITTER_API_OAUTH1_AUTHENTICATE_URL = "https://api.twitter.com/oauth/authenticate"
-let TWITTER_API_OAUTH2_TOKEN_URL = "https://api.twitter.com/oauth2/token"
-let TWITTER_API_USER_TIMELINE_URL = "https://api.twitter.com/1.1/statuses/user_timeline.json"
+let TWITTER_API_BASE_URL = "https://api.twitter.com"
+// oauth resources
+let TWITTER_API_OAUTH1_REQUEST_TOKEN_RESOURCE = "/oauth/request_token"
+let TWITTER_API_OAUTH1_AUTHENTICATE_RESOURCE = "/oauth/authenticate"
+let TWITTER_API_OAUTH1_ACCESS_TOKEN_RESOURCE = "/oauth/access_token"
+let TWITTER_API_OAUTH2_TOKEN_RESOURCE = "/oauth2/token"
+// api resources
+let TWITTER_API_VERIFY_CREDENTIALS_RESOURCE = "/1.1/account/verify_credentials.json"
+let TWITTER_API_HOME_TIMELINE_RESOURCE = "/1.1/statuses/home_timeline.json"
+let TWITTER_API_USER_TIMELINE_RESOURCE = "/1.1/statuses/user_timeline.json"
 
 class TwitterClient: BDBOAuth1RequestOperationManager {
+    var loginCompletion: ((user: TwitterUser?, error: NSError?) -> ())?
+
     var accessToken: String!
     var accessSecret: String!
 
@@ -25,9 +34,25 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
     }
 
     class var sharedInstance : TwitterClient {
-    struct Static {
-        static var token : dispatch_once_t = 0
-        static var instance : TwitterClient? = nil
+        struct Static {
+            static let instance = TwitterClient(
+                baseURL: NSURL(string: TWITTER_API_BASE_URL),
+                consumerKey: TWITTER_API_CONSUMER_KEY,
+                consumerSecret: TWITTER_API_CONSUMER_SECRET
+            )
+        }
+        return Static.instance
+    }
+
+    override init(baseURL: NSURL, consumerKey: String!, consumerSecret: String!) {
+        super.init(baseURL: baseURL, consumerKey: consumerKey, consumerSecret: consumerSecret)
+    }
+
+    // authenticatedSharedInstance uses the app's own access token and secret
+    class var authenticatedSharedInstance : TwitterClient {
+        struct Static {
+            static var token : dispatch_once_t = 0
+            static var instance : TwitterClient? = nil
         }
         dispatch_once(&Static.token) {
             Static.instance = TwitterClient(
@@ -44,33 +69,112 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
         self.accessToken = accessToken
         self.accessSecret = accessSecret
 
-        var baseUrl = NSURL(string: TWITTER_API_OAUTH1_AUTHENTICATE_URL)
-        super.init(baseURL: baseUrl, consumerKey: key, consumerSecret: secret)
+        var baseURL = NSURL(string: TWITTER_API_OAUTH1_AUTHENTICATE_RESOURCE)
+        super.init(baseURL: baseURL, consumerKey: key, consumerSecret: secret)
 
         var token = BDBOAuthToken(token: accessToken, secret: accessSecret, expiration: nil)
         self.requestSerializer.saveAccessToken(token)
     }
 
-    func getTimelineForUsername(username: String, callback: ([Tweet]) -> Void) {
+    func login(url: String, path: String, completion: (user: TwitterUser?, error: NSError?) -> Void) {
+        // perform any logout actions before trying to log in
+        self.logout()
+
+        self.loginCompletion = completion
+
+        // Fetch request token & redirect to authorization page
+        self.fetchRequestTokenWithPath(
+            TWITTER_API_OAUTH1_REQUEST_TOKEN_RESOURCE,
+            method: "GET",
+            callbackURL: NSURL(string:"\(url)://\(path)"),
+            scope: nil,
+            success: {
+                (requestToken: BDBOAuthToken!) -> Void in
+                println("Got the request token")
+                var authURL = NSURL(string: "https://api.twitter.com/oauth/authorize?oauth_token=\(requestToken.token)")
+                UIApplication.sharedApplication().openURL(authURL)
+            }, failure: {
+                (error: NSError!) -> Void in
+                println("Error getting the request token: \(error)")
+                self.loginCompletion?(user: nil, error: error)
+            }
+        )
+    }
+
+    func logout() {
+        TwitterClient.sharedInstance.requestSerializer.removeAccessToken()
+    }
+
+    func openURL(url: NSURL) {
+        // called by AppDelegate.application(..., openURL: ...)
+        self.fetchAccessTokenWithPath(
+            TWITTER_API_OAUTH1_ACCESS_TOKEN_RESOURCE,
+            method: "POST",
+            requestToken: BDBOAuthToken(queryString: url.query),
+            success: {
+                (accessToken: BDBOAuthToken!) -> Void in
+                println("Got the access token")
+                self.requestSerializer.saveAccessToken(accessToken)
+                self.verifyCredentials()
+            }, failure: {
+                (error: NSError!) -> Void in
+                println("Failed to receive access token")
+                self.loginCompletion?(user: nil, error: error)
+            }
+        )
+    }
+
+    func verifyCredentials() {
+        self.GET(
+            TWITTER_API_VERIFY_CREDENTIALS_RESOURCE,
+            parameters: nil,
+            success: {
+                (operation: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
+                var user = TwitterUser(userDictionary: response as NSDictionary)
+                TwitterUser.currentUser = user
+                self.loginCompletion?(user: user, error: nil)
+            }, failure: {
+                (operation: AFHTTPRequestOperation!, error: NSError!) -> Void in
+                println("Error verifying credentials")
+                HTKNotificationUtils.displayNetworkErrorMessage()
+            }
+        )
+    }
+
+    func getHomeTimelineWithParams(params: NSDictionary?, callback: (tweets: [Tweet]?, error: NSError?) -> Void) {
+        TwitterClient.sharedInstance.GET(
+            TWITTER_API_HOME_TIMELINE_RESOURCE,
+            parameters: nil,
+            success: {
+                (operation: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
+                var tweets = Tweet.tweetsWithArray(response as [NSDictionary])
+                callback(tweets: tweets, error: nil)
+            }, failure: {
+                (operation: AFHTTPRequestOperation!, error: NSError!) -> Void in
+                println("Error getting home timeline")
+                HTKNotificationUtils.displayNetworkErrorMessage()
+                callback(tweets: nil, error: error)
+            }
+        )
+    }
+
+    func getTimelineForUsername(username: String, callback: (tweets: [Tweet]?, error: NSError?) -> Void) {
         // For documenation see: https://dev.twitter.com/rest/reference/get/statuses/user_timeline
         var parameters = [
             "screen_name" : username,
         ]
 
         self.GET(
-            TWITTER_API_USER_TIMELINE_URL,
+            TWITTER_API_USER_TIMELINE_RESOURCE,
             parameters: parameters,
             success: { (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
-                var tweetDictionaries = response as [NSDictionary]
-                var tweets = tweetDictionaries.map {
-                    (tweetDictionary: NSDictionary) -> Tweet in
-                    Tweet(tweetDictionary: tweetDictionary)
-                }
-                callback(tweets)
+                var tweets = Tweet.tweetsWithArray(response as [NSDictionary])
+                callback(tweets: tweets, error: nil)
             },
             failure: {
                 (request: AFHTTPRequestOperation!, error: NSError!) -> Void in
                 HTKNotificationUtils.displayNetworkErrorMessage()
+                callback(tweets: nil, error: error)
             }
         )
     }

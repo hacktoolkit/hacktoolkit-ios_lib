@@ -9,7 +9,7 @@ import Foundation
 
 class HTKUtils {
 
-    class func setDefaults(key: String, withValue value: AnyObject) {
+    class func setDefaults(key: String, withValue value: AnyObject?) {
         var defaults = NSUserDefaults.standardUserDefaults()
         defaults.setObject(value, forKey: key)
         defaults.synchronize()
