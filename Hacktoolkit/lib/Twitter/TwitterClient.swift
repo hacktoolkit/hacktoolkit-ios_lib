@@ -18,10 +18,14 @@ let TWITTER_API_OAUTH1_REQUEST_TOKEN_RESOURCE = "/oauth/request_token"
 let TWITTER_API_OAUTH1_AUTHENTICATE_RESOURCE = "/oauth/authenticate"
 let TWITTER_API_OAUTH1_ACCESS_TOKEN_RESOURCE = "/oauth/access_token"
 let TWITTER_API_OAUTH2_TOKEN_RESOURCE = "/oauth2/token"
+
 // api resources
 let TWITTER_API_VERIFY_CREDENTIALS_RESOURCE = "/1.1/account/verify_credentials.json"
+// timelines
 let TWITTER_API_HOME_TIMELINE_RESOURCE = "/1.1/statuses/home_timeline.json"
 let TWITTER_API_USER_TIMELINE_RESOURCE = "/1.1/statuses/user_timeline.json"
+// favorites
+let TWITTER_API_FAVORITES_CREATE_RESOURCE = "/1.1/favorites/create.json"
 
 class TwitterClient: BDBOAuth1RequestOperationManager {
     var loginCompletion: ((user: TwitterUser?, error: NSError?) -> ())?
@@ -141,12 +145,17 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
         )
     }
 
+    // timelines
+
     func getHomeTimelineWithParams(params: NSDictionary?, callback: (tweets: [Tweet]?, error: NSError?) -> Void) {
+        // https://dev.twitter.com/rest/reference/get/statuses/home_timeline
+        println("Getting home timeline")
         TwitterClient.sharedInstance.GET(
             TWITTER_API_HOME_TIMELINE_RESOURCE,
-            parameters: nil,
+            parameters: params,
             success: {
                 (operation: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
+                println("Got home timeline")
                 var tweets = Tweet.tweetsWithArray(response as [NSDictionary])
                 callback(tweets: tweets, error: nil)
             }, failure: {
@@ -158,16 +167,19 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
         )
     }
 
-    func getTimelineForUsername(username: String, callback: (tweets: [Tweet]?, error: NSError?) -> Void) {
+    func getTimelineForUsername(username: String, params: NSDictionary?, callback: (tweets: [Tweet]?, error: NSError?) -> Void) {
         // For documenation see: https://dev.twitter.com/rest/reference/get/statuses/user_timeline
         var parameters = [
             "screen_name" : username,
         ]
+        // try to extend parameters with params...
 
+        println("Getting user timeline: \(username)")
         self.GET(
             TWITTER_API_USER_TIMELINE_RESOURCE,
             parameters: parameters,
             success: { (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
+                println("Got user timeline: \(username)")
                 var tweets = Tweet.tweetsWithArray(response as [NSDictionary])
                 callback(tweets: tweets, error: nil)
             },
