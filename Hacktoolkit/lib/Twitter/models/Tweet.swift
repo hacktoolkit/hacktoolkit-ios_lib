@@ -22,6 +22,7 @@ class Tweet: NSObject {
 
     // Tweet relations
     var user: TwitterUser?
+    var retweetSource: Tweet?
 
     init(tweetDictionary: NSDictionary) {
         self.tweetDictionary = tweetDictionary
@@ -35,12 +36,17 @@ class Tweet: NSObject {
         self.createdAt = formatter.dateFromString(createdAtString!)
 
         self.favoriteCount = tweetDictionary["favorite_count"] as? Int
-        self.favorited = tweetDictionary["favorited"] as? Bool
+        self.favorited = (tweetDictionary["favorited"] as? Int)! == 1
         self.retweetCount = tweetDictionary["retweet_count"] as? Int
-        self.retweeted = tweetDictionary["retweeted"] as? Bool
+        self.retweeted = (tweetDictionary["retweeted"] as? Int)! == 1
 
         var userDictionary = tweetDictionary["user"] as NSDictionary
         user = TwitterUser(userDictionary: userDictionary)
+
+        var retweetedStatus = tweetDictionary["retweeted_status"] as? NSDictionary
+        if retweetedStatus != nil {
+            self.retweetSource = Tweet(tweetDictionary: retweetedStatus!)
+        }
     }
 
     class func tweetsWithArray(tweetDictionaries: [NSDictionary]) -> [Tweet] {
