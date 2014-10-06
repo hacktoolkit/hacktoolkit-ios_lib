@@ -57,11 +57,77 @@ class Tweet: NSObject {
         return tweets
     }
 
+    class func create(status: String, withCompletion completion: (tweet: Tweet?, error: NSError?) -> Void) {
+        // https://dev.twitter.com/rest/reference/post/statuses/update
+        var params: [String:AnyObject] = [
+            "status": status,
+        ]
+        TwitterClient.sharedInstance.POST(
+            TWITTER_API_STATUSES_UPDATE_RESOURCE,
+            parameters: params,
+            success: {
+                (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
+                var tweet = Tweet(tweetDictionary: response as NSDictionary)
+                completion(tweet: tweet, error: nil)
+            },
+            failure: {
+                (request: AFHTTPRequestOperation!, error: NSError!) -> Void in
+                HTKNotificationUtils.displayNetworkErrorMessage()
+            }
+        )
+    }
+
     func favorite() {
+        var params: [String:AnyObject] = [
+            "id" : self.id!,
+        ]
+        TwitterClient.sharedInstance.POST(
+            TWITTER_API_FAVORITES_CREATE_RESOURCE,
+            parameters: params,
+            success: {
+                (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
+                println(response)
+            },
+            failure: {
+                (request: AFHTTPRequestOperation!, error: NSError!) -> Void in
+                HTKNotificationUtils.displayNetworkErrorMessage()
+            }
+        )
+    }
+
+    func unfavorite() {
         var params: [String:AnyObject] = ["id" : self.id!]
         TwitterClient.sharedInstance.POST(
-            TWITTER_API_USER_TIMELINE_RESOURCE,
+            TWITTER_API_FAVORITES_DESTROY_RESOURCE,
             parameters: params,
+            success: { (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
+                println(response)
+            },
+            failure: {
+                (request: AFHTTPRequestOperation!, error: NSError!) -> Void in
+                HTKNotificationUtils.displayNetworkErrorMessage()
+            }
+        )
+    }
+
+    func retweet() {
+        TwitterClient.sharedInstance.POST(
+            "\(TWITTER_API_STATUSES_RETWEET_RESOURCE_PREFIX)\(self.id)\(TWITTER_API_RESOURCE_SUFFIX)",
+            parameters: nil,
+            success: { (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
+                println(response)
+            },
+            failure: {
+                (request: AFHTTPRequestOperation!, error: NSError!) -> Void in
+                HTKNotificationUtils.displayNetworkErrorMessage()
+            }
+        )
+    }
+
+    func unretweet() {
+        TwitterClient.sharedInstance.POST(
+            "\(TWITTER_API_STATUSES_RETWEET_RESOURCE_PREFIX)\(self.id)\(TWITTER_API_RESOURCE_SUFFIX)",
+            parameters: nil,
             success: { (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
                 println(response)
             },

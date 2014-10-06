@@ -7,6 +7,8 @@
 
 import Foundation
 
+let TWEET_LENGTH_LIMIT = 140
+
 let TWITTER_API_CONSUMER_KEY = HTKUtils.getStringFromInfoBundleForKey("TWITTER_API_CONSUMER_KEY")
 let TWITTER_API_CONSUMER_SECRET = HTKUtils.getStringFromInfoBundleForKey("TWITTER_API_CONSUMER_SECRET")
 let TWITTER_API_TOKEN = HTKUtils.getStringFromInfoBundleForKey("TWITTER_API_TOKEN")
@@ -20,12 +22,18 @@ let TWITTER_API_OAUTH1_ACCESS_TOKEN_RESOURCE = "/oauth/access_token"
 let TWITTER_API_OAUTH2_TOKEN_RESOURCE = "/oauth2/token"
 
 // api resources
+let TWITTER_API_RESOURCE_SUFFIX = ".json"
+// account
 let TWITTER_API_VERIFY_CREDENTIALS_RESOURCE = "/1.1/account/verify_credentials.json"
 // timelines
 let TWITTER_API_HOME_TIMELINE_RESOURCE = "/1.1/statuses/home_timeline.json"
 let TWITTER_API_USER_TIMELINE_RESOURCE = "/1.1/statuses/user_timeline.json"
+// statuses (tweets)
+let TWITTER_API_STATUSES_UPDATE_RESOURCE = "/1.1/statuses/update.json"
+let TWITTER_API_STATUSES_RETWEET_RESOURCE_PREFIX = "/1.1/statuses/retweet/"
 // favorites
 let TWITTER_API_FAVORITES_CREATE_RESOURCE = "/1.1/favorites/create.json"
+let TWITTER_API_FAVORITES_DESTROY_RESOURCE = "/1.1/favorites/destroy.json"
 
 class TwitterClient: BDBOAuth1RequestOperationManager {
     var loginCompletion: ((user: TwitterUser?, error: NSError?) -> ())?
