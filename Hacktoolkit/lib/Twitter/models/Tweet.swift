@@ -35,9 +35,9 @@ class Tweet: NSObject {
         formatter.dateFormat = "EEE MMM d HH:mm:ss Z y"
         self.createdAt = formatter.dateFromString(createdAtString!)
 
-        self.favoriteCount = tweetDictionary["favorite_count"] as? Int
+        self.favoriteCount = tweetDictionary["favorite_count"] as? Int ?? 0
         self.favorited = (tweetDictionary["favorited"] as? Int)! == 1
-        self.retweetCount = tweetDictionary["retweet_count"] as? Int
+        self.retweetCount = tweetDictionary["retweet_count"] as? Int ?? 0
         self.retweeted = (tweetDictionary["retweeted"] as? Int)! == 1
 
         var userDictionary = tweetDictionary["user"] as NSDictionary
@@ -78,12 +78,68 @@ class Tweet: NSObject {
         )
     }
 
+    func wasRetweeted() -> Bool {
+        var value = self.retweetSource != nil
+        return value
+    }
+
+    func getSource() -> Tweet {
+        var sourceTweet: Tweet
+        if self.wasRetweeted() {
+            sourceTweet = self.retweetSource!
+        } else {
+            sourceTweet = self
+        }
+        return sourceTweet
+    }
+
+    func toggleRetweet() {
+        self.retweeted! = !self.retweeted!
+        if self.retweeted! == true {
+            self.getSource().retweetCount! += 1
+            //            self.retweet()
+        } else {
+            //            self.unretweet()
+            self.getSource().retweetCount! -= 1
+        }
+    }
+
+    func retweet() {
+        TwitterClient.sharedInstance.POST(
+            "\(TWITTER_API_STATUSES_RETWEET_RESOURCE_PREFIX)\(self.id)\(TWITTER_API_RESOURCE_SUFFIX)",
+            parameters: nil,
+            success: { (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
+                println(response)
+            },
+            failure: {
+                (request: AFHTTPRequestOperation!, error: NSError!) -> Void in
+                HTKNotificationUtils.displayNetworkErrorMessage()
+            }
+        )
+    }
+
+    func unretweet() {
+        TwitterClient.sharedInstance.POST(
+            "\(TWITTER_API_STATUSES_RETWEET_RESOURCE_PREFIX)\(self.id)\(TWITTER_API_RESOURCE_SUFFIX)",
+            parameters: nil,
+            success: { (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
+                println(response)
+            },
+            failure: {
+                (request: AFHTTPRequestOperation!, error: NSError!) -> Void in
+                HTKNotificationUtils.displayNetworkErrorMessage()
+            }
+        )
+    }
+
     func toggleFavorite() {
         self.favorited! = !self.favorited!
         if self.favorited! == true {
+            self.getSource().favoriteCount! += 1
 //            self.favorite()
         } else {
 //            self.unfavorite()
+            self.getSource().favoriteCount! -= 1
         }
     }
 
@@ -120,42 +176,6 @@ class Tweet: NSObject {
         )
     }
 
-    func toggleRetweet() {
-        self.retweeted! = !self.retweeted!
-        if self.retweeted! == true {
-//            self.retweet()
-        } else {
-//            self.unretweet()
-        }
-    }
-
-    func retweet() {
-        TwitterClient.sharedInstance.POST(
-            "\(TWITTER_API_STATUSES_RETWEET_RESOURCE_PREFIX)\(self.id)\(TWITTER_API_RESOURCE_SUFFIX)",
-            parameters: nil,
-            success: { (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
-                println(response)
-            },
-            failure: {
-                (request: AFHTTPRequestOperation!, error: NSError!) -> Void in
-                HTKNotificationUtils.displayNetworkErrorMessage()
-            }
-        )
-    }
-
-    func unretweet() {
-        TwitterClient.sharedInstance.POST(
-            "\(TWITTER_API_STATUSES_RETWEET_RESOURCE_PREFIX)\(self.id)\(TWITTER_API_RESOURCE_SUFFIX)",
-            parameters: nil,
-            success: { (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
-                println(response)
-            },
-            failure: {
-                (request: AFHTTPRequestOperation!, error: NSError!) -> Void in
-                HTKNotificationUtils.displayNetworkErrorMessage()
-            }
-        )
-    }
 }
 
 //{
