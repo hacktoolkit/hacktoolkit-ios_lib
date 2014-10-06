@@ -30,6 +30,7 @@ let TWITTER_API_HOME_TIMELINE_RESOURCE = "/1.1/statuses/home_timeline.json"
 let TWITTER_API_USER_TIMELINE_RESOURCE = "/1.1/statuses/user_timeline.json"
 // statuses (tweets)
 let TWITTER_API_STATUSES_UPDATE_RESOURCE = "/1.1/statuses/update.json"
+let TWITTER_API_STATUSES_DESTROY_RESOURCE_PREFIX = "/1.1/statuses/destroy/"
 let TWITTER_API_STATUSES_RETWEET_RESOURCE_PREFIX = "/1.1/statuses/retweet/"
 // favorites
 let TWITTER_API_FAVORITES_CREATE_RESOURCE = "/1.1/favorites/create.json"

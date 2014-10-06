@@ -23,6 +23,7 @@ class Tweet: NSObject {
     // Tweet relations
     var user: TwitterUser?
     var retweetSource: Tweet?
+    var retweet: Tweet?
 
     // Meta
     var didReply = false
@@ -89,6 +90,23 @@ class Tweet: NSObject {
         )
     }
 
+    func destroy(callback: (response: AnyObject!, error: NSError!) -> Void) {
+        TwitterClient.sharedInstance.POST(
+            "\(TWITTER_API_STATUSES_DESTROY_RESOURCE_PREFIX)\(self.id!)\(TWITTER_API_RESOURCE_SUFFIX)",
+            parameters: nil,
+            success: { (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
+                println("Successfully destroyed tweet")
+                callback(response: response, error: nil)
+            },
+            failure: {
+                (request: AFHTTPRequestOperation!, error: NSError!) -> Void in
+                HTKNotificationUtils.displayNetworkErrorMessage()
+                println("Failed to destroy tweet")
+                callback(response: nil, error: error)
+            }
+        )
+    }
+
     func wasRetweeted() -> Bool {
         var value = self.retweetSource != nil
         return value
@@ -104,57 +122,64 @@ class Tweet: NSObject {
         return sourceTweet
     }
 
-    func toggleRetweet() {
+    func toggleRetweet(callback: () -> Void) {
         self.retweeted! = !self.retweeted!
         if self.retweeted! == true {
             self.getSource().retweetCount! += 1
-            //            self.retweet()
+            self.retweet(callback)
         } else {
-            //            self.unretweet()
+            self.unretweet(callback)
             self.getSource().retweetCount! -= 1
         }
     }
 
-    func retweet() {
+    func retweet(callback: () -> Void) {
         TwitterClient.sharedInstance.POST(
-            "\(TWITTER_API_STATUSES_RETWEET_RESOURCE_PREFIX)\(self.id)\(TWITTER_API_RESOURCE_SUFFIX)",
+            "\(TWITTER_API_STATUSES_RETWEET_RESOURCE_PREFIX)\(self.id!)\(TWITTER_API_RESOURCE_SUFFIX)",
             parameters: nil,
             success: { (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
-                println(response)
+                println("Successfully retweeted")
+                callback()
+                var retweet = Tweet(tweetDictionary: response as NSDictionary)
+                self.retweet = retweet
             },
             failure: {
                 (request: AFHTTPRequestOperation!, error: NSError!) -> Void in
                 HTKNotificationUtils.displayNetworkErrorMessage()
+                println("Failed to retweet")
+                callback()
+                // revert the optimistic API call
+                self.getSource().retweetCount! -= 1
             }
         )
     }
 
-    func unretweet() {
-        TwitterClient.sharedInstance.POST(
-            "\(TWITTER_API_STATUSES_RETWEET_RESOURCE_PREFIX)\(self.id)\(TWITTER_API_RESOURCE_SUFFIX)",
-            parameters: nil,
-            success: { (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
-                println(response)
-            },
-            failure: {
-                (request: AFHTTPRequestOperation!, error: NSError!) -> Void in
-                HTKNotificationUtils.displayNetworkErrorMessage()
+    func unretweet(callback: () -> Void) {
+        self.retweet?.destroy({
+            (response: AnyObject!, error: NSError!) -> Void in
+            callback()
+            if response != nil {
+                println("Successfully unretweeted")
+            } else if error != nil {
+                println("Failed to unretweet")
+                // revert the optimistic API call
+                self.getSource().retweetCount! += 1
             }
-        )
+        })
     }
 
-    func toggleFavorite() {
+    func toggleFavorite(callback: () -> Void) {
         self.favorited! = !self.favorited!
         if self.favorited! == true {
             self.getSource().favoriteCount! += 1
-//            self.favorite()
+            self.favorite(callback)
         } else {
-//            self.unfavorite()
+            self.unfavorite(callback)
             self.getSource().favoriteCount! -= 1
         }
     }
 
-    func favorite() {
+    func favorite(callback: () -> Void) {
         var params: [String:AnyObject] = [
             "id" : self.id!,
         ]
@@ -163,26 +188,36 @@ class Tweet: NSObject {
             parameters: params,
             success: {
                 (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
-                println(response)
+                println("Successfully favorited")
+                callback()
             },
             failure: {
                 (request: AFHTTPRequestOperation!, error: NSError!) -> Void in
                 HTKNotificationUtils.displayNetworkErrorMessage()
+                println("Failed to favorite")
+                callback()
+                // revert the optimistic API call
+                self.getSource().favoriteCount! -= 1
             }
         )
     }
 
-    func unfavorite() {
+    func unfavorite(callback: () -> Void) {
         var params: [String:AnyObject] = ["id" : self.id!]
         TwitterClient.sharedInstance.POST(
             TWITTER_API_FAVORITES_DESTROY_RESOURCE,
             parameters: params,
             success: { (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
-                println(response)
+                println("Successfully unfavorited")
+                callback()
             },
             failure: {
                 (request: AFHTTPRequestOperation!, error: NSError!) -> Void in
                 HTKNotificationUtils.displayNetworkErrorMessage()
+                println("Failed to favorite")
+                callback()
+                // revert the optimistic API call
+                self.getSource().favoriteCount! += 1
             }
         )
     }
