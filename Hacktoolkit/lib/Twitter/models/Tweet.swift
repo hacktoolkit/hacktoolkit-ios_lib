@@ -24,6 +24,9 @@ class Tweet: NSObject {
     var user: TwitterUser?
     var retweetSource: Tweet?
 
+    // Meta
+    var didReply = false
+
     init(tweetDictionary: NSDictionary) {
         self.tweetDictionary = tweetDictionary
 
@@ -47,6 +50,8 @@ class Tweet: NSObject {
         if retweetedStatus != nil {
             self.retweetSource = Tweet(tweetDictionary: retweetedStatus!)
         }
+
+        // TODO: figure out how to set didReply from the tweetDictionary
     }
 
     class func tweetsWithArray(tweetDictionaries: [NSDictionary]) -> [Tweet] {
@@ -57,11 +62,14 @@ class Tweet: NSObject {
         return tweets
     }
 
-    class func create(status: String, withCompletion completion: (tweet: Tweet?, error: NSError?) -> Void) {
+    class func create(status: String, asReplyTo replyTweet: Tweet?, withCompletion completion: (tweet: Tweet?, error: NSError?) -> Void) {
         // https://dev.twitter.com/rest/reference/post/statuses/update
         var params: [String:AnyObject] = [
             "status": status,
         ]
+        if replyTweet != nil {
+            params["in_reply_to_status_id"] = replyTweet!.id!
+        }
         TwitterClient.sharedInstance.POST(
             TWITTER_API_STATUSES_UPDATE_RESOURCE,
             parameters: params,
@@ -69,6 +77,9 @@ class Tweet: NSObject {
                 (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
                 var tweet = Tweet(tweetDictionary: response as NSDictionary)
                 completion(tweet: tweet, error: nil)
+                if replyTweet != nil {
+                    replyTweet!.didReply = true
+                }
             },
             failure: {
                 (request: AFHTTPRequestOperation!, error: NSError!) -> Void in
