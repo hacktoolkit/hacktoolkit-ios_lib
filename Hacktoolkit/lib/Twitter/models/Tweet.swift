@@ -73,6 +73,7 @@ class Tweet: NSObject {
             failure: {
                 (request: AFHTTPRequestOperation!, error: NSError!) -> Void in
                 HTKNotificationUtils.displayNetworkErrorMessage()
+                completion(tweet: nil, error: error)
             }
         )
     }
