@@ -78,6 +78,15 @@ class Tweet: NSObject {
         )
     }
 
+    func toggleFavorite() {
+        self.favorited! = !self.favorited!
+        if self.favorited! == true {
+//            self.favorite()
+        } else {
+//            self.unfavorite()
+        }
+    }
+
     func favorite() {
         var params: [String:AnyObject] = [
             "id" : self.id!,
@@ -109,6 +118,15 @@ class Tweet: NSObject {
                 HTKNotificationUtils.displayNetworkErrorMessage()
             }
         )
+    }
+
+    func toggleRetweet() {
+        self.retweeted! = !self.retweeted!
+        if self.retweeted! == true {
+//            self.retweet()
+        } else {
+//            self.unretweet()
+        }
     }
 
     func retweet() {
