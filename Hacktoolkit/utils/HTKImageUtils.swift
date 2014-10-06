@@ -41,4 +41,10 @@ class HTKImageUtils {
     func storeImageToCache(imageUrl: String, image: UIImage) {
         self.imageCache[imageUrl] = image
     }
+
+    class func getLocalImage(resource: String, ofType imageType: String) -> UIImage {
+        var imagePath = NSBundle.mainBundle().pathForResource(resource, ofType: imageType)
+        var image = UIImage(contentsOfFile: imagePath!)
+        return image
+    }
 }
