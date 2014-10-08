@@ -57,7 +57,7 @@ class GitHubRepository: GitHubResource {
         self.size = repositoryDict["size"] as? Int
 
         if let ownerDict = repositoryDict["owner"] as? NSDictionary {
-//            println(ownerDict)
+//            NSLog(ownerDict)
             var ownerType = ownerDict["type"] as? String
             if ownerType == "Organization" {
                 var organizationOwner = GitHubOrganization(fromDict: ownerDict)
@@ -95,7 +95,7 @@ class GitHubRepository: GitHubResource {
         GitHubClient.sharedInstance.makeApiRequest(resource, callback: {
             (result: AnyObject) -> () in
             if let fileDict = result as? NSDictionary {
-                println("Got README")
+                NSLog("Got README")
                 self.readme = GitHubRepositoryContent(forFile: fileDict)
             }
         })

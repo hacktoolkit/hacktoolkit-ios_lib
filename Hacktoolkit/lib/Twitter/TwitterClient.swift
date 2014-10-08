@@ -103,12 +103,12 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
             scope: nil,
             success: {
                 (requestToken: BDBOAuthToken!) -> Void in
-                println("Got the request token")
+                NSLog("Got the request token")
                 var authURL = NSURL(string: "https://api.twitter.com/oauth/authorize?oauth_token=\(requestToken.token)")
                 UIApplication.sharedApplication().openURL(authURL)
             }, failure: {
                 (error: NSError!) -> Void in
-                println("Error getting the request token: \(error)")
+                NSLog("Error getting the request token: \(error)")
                 self.loginCompletion?(user: nil, error: error)
             }
         )
@@ -126,12 +126,12 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
             requestToken: BDBOAuthToken(queryString: url.query),
             success: {
                 (accessToken: BDBOAuthToken!) -> Void in
-                println("Got the access token")
+                NSLog("Got the access token")
                 self.requestSerializer.saveAccessToken(accessToken)
                 self.verifyCredentials()
             }, failure: {
                 (error: NSError!) -> Void in
-                println("Failed to receive access token")
+                NSLog("Failed to receive access token")
                 self.loginCompletion?(user: nil, error: error)
             }
         )
@@ -148,7 +148,7 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
                 self.loginCompletion?(user: user, error: nil)
             }, failure: {
                 (operation: AFHTTPRequestOperation!, error: NSError!) -> Void in
-                println("Error verifying credentials")
+                NSLog("Error verifying credentials")
                 HTKNotificationUtils.displayNetworkErrorMessage()
             }
         )
@@ -158,18 +158,18 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
 
     func getHomeTimelineWithParams(params: [String:AnyObject]?, callback: (tweets: [Tweet]?, error: NSError?) -> Void) {
         // https://dev.twitter.com/rest/reference/get/statuses/home_timeline
-        println("Getting home timeline")
+        NSLog("Getting home timeline")
         TwitterClient.sharedInstance.GET(
             TWITTER_API_HOME_TIMELINE_RESOURCE,
             parameters: params,
             success: {
                 (operation: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
-                println("Got home timeline")
+                NSLog("Got home timeline")
                 var tweets = Tweet.tweetsWithArray(response as [NSDictionary])
                 callback(tweets: tweets, error: nil)
             }, failure: {
                 (operation: AFHTTPRequestOperation!, error: NSError!) -> Void in
-                println("Error getting home timeline")
+                NSLog("Error getting home timeline")
                 HTKNotificationUtils.displayNetworkErrorMessage()
                 callback(tweets: nil, error: error)
             }
@@ -183,12 +183,12 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
         }
         params!["screen_name"] = username
 
-        println("Getting user timeline: \(username)")
+        NSLog("Getting user timeline: \(username)")
         self.GET(
             TWITTER_API_USER_TIMELINE_RESOURCE,
             parameters: params,
             success: { (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
-                println("Got user timeline: \(username)")
+                NSLog("Got user timeline: \(username)")
                 var tweets = Tweet.tweetsWithArray(response as [NSDictionary])
                 callback(tweets: tweets, error: nil)
             },

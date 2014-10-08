@@ -92,7 +92,6 @@ class GitHubOrganization: GitHubResource {
                 }
             } else {
                 HTKNotificationUtils.displayNetworkErrorMessage()
-                println(results)
             }
         })
     }

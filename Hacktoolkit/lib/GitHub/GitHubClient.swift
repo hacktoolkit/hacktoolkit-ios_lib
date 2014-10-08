@@ -33,7 +33,7 @@ class GitHubClient {
         // https://developer.github.com/v3/#increasing-the-unauthenticated-rate-limit-for-oauth-applications
         apiUrl = "\(apiUrl)?client_id=\(GITHUB_API_CONSUMER_KEY)&client_secret=\(GITHUB_API_CONSUMER_SECRET)"
         let request = NSMutableURLRequest(URL: NSURL.URLWithString(apiUrl))
-        println("Hitting API: \(apiUrl)")
+        NSLog("Hitting API: \(apiUrl)")
 
         var cachedResult: AnyObject? = cache[apiUrl]
         if cachedResult != nil {

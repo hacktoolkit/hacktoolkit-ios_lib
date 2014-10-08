@@ -95,13 +95,13 @@ class Tweet: NSObject {
             "\(TWITTER_API_STATUSES_DESTROY_RESOURCE_PREFIX)\(self.id!)\(TWITTER_API_RESOURCE_SUFFIX)",
             parameters: nil,
             success: { (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
-                println("Successfully destroyed tweet")
+                NSLog("Successfully destroyed tweet")
                 callback(response: response, error: nil)
             },
             failure: {
                 (request: AFHTTPRequestOperation!, error: NSError!) -> Void in
                 HTKNotificationUtils.displayNetworkErrorMessage()
-                println("Failed to destroy tweet")
+                NSLog("Failed to destroy tweet")
                 callback(response: nil, error: error)
             }
         )
@@ -138,7 +138,7 @@ class Tweet: NSObject {
             "\(TWITTER_API_STATUSES_RETWEET_RESOURCE_PREFIX)\(self.id!)\(TWITTER_API_RESOURCE_SUFFIX)",
             parameters: nil,
             success: { (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
-                println("Successfully retweeted")
+                NSLog("Successfully retweeted")
                 callback()
                 var retweet = Tweet(tweetDictionary: response as NSDictionary)
                 self.retweet = retweet
@@ -146,7 +146,7 @@ class Tweet: NSObject {
             failure: {
                 (request: AFHTTPRequestOperation!, error: NSError!) -> Void in
                 HTKNotificationUtils.displayNetworkErrorMessage()
-                println("Failed to retweet")
+                NSLog("Failed to retweet")
                 callback()
                 // revert the optimistic API call
                 self.getSource().retweetCount! -= 1
@@ -159,9 +159,9 @@ class Tweet: NSObject {
             (response: AnyObject!, error: NSError!) -> Void in
             callback()
             if response != nil {
-                println("Successfully unretweeted")
+                NSLog("Successfully unretweeted")
             } else if error != nil {
-                println("Failed to unretweet")
+                NSLog("Failed to unretweet")
                 // revert the optimistic API call
                 self.getSource().retweetCount! += 1
             }
@@ -188,13 +188,13 @@ class Tweet: NSObject {
             parameters: params,
             success: {
                 (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
-                println("Successfully favorited")
+                NSLog("Successfully favorited")
                 callback()
             },
             failure: {
                 (request: AFHTTPRequestOperation!, error: NSError!) -> Void in
                 HTKNotificationUtils.displayNetworkErrorMessage()
-                println("Failed to favorite")
+                NSLog("Failed to favorite")
                 callback()
                 // revert the optimistic API call
                 self.getSource().favoriteCount! -= 1
@@ -208,13 +208,13 @@ class Tweet: NSObject {
             TWITTER_API_FAVORITES_DESTROY_RESOURCE,
             parameters: params,
             success: { (request: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
-                println("Successfully unfavorited")
+                NSLog("Successfully unfavorited")
                 callback()
             },
             failure: {
                 (request: AFHTTPRequestOperation!, error: NSError!) -> Void in
                 HTKNotificationUtils.displayNetworkErrorMessage()
-                println("Failed to favorite")
+                NSLog("Failed to favorite")
                 callback()
                 // revert the optimistic API call
                 self.getSource().favoriteCount! += 1

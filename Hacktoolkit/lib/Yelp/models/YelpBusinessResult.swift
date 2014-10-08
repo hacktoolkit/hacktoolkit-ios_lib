@@ -73,7 +73,7 @@ class YelpBusinessResult {
             query,
             success: {
                 (operation: AFHTTPRequestOperation!, response: AnyObject!) -> Void in
-                // println(response)
+                // NSLog(response)
                 var results = (response as NSDictionary)["businesses"] as [NSDictionary]
                 var businesses = results.map({
                     (businessDict: NSDictionary) -> YelpBusinessResult in
@@ -83,7 +83,7 @@ class YelpBusinessResult {
             },
             failure: {
                 (operation: AFHTTPRequestOperation!, error: NSError!) -> Void in
-                // println(error)
+                // NSLog(error)
                 callback(nil, error)
             }
         )
