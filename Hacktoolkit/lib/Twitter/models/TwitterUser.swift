@@ -19,6 +19,7 @@ class TwitterUser: NSObject {
     var screenname: String?
     var profileImageUrl: String?
     var tagline: String?
+    var location: String?
 
     init(userDictionary: NSDictionary) {
         self.userDictionary = userDictionary
@@ -27,6 +28,7 @@ class TwitterUser: NSObject {
         screenname = userDictionary["screen_name"] as? String
         profileImageUrl = userDictionary["profile_image_url"] as? String
         tagline = userDictionary["description"] as? String
+        location = userDictionary["location"] as? String
     }
 
     class var currentUser: TwitterUser? {
