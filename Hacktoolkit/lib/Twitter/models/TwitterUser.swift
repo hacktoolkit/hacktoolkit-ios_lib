@@ -21,6 +21,10 @@ class TwitterUser: NSObject {
     var tagline: String?
     var location: String?
 
+    var numTweets: Int?
+    var friendsCount: Int?
+    var followersCount: Int?
+
     init(userDictionary: NSDictionary) {
         self.userDictionary = userDictionary
 
@@ -29,6 +33,10 @@ class TwitterUser: NSObject {
         profileImageUrl = userDictionary["profile_image_url"] as? String
         tagline = userDictionary["description"] as? String
         location = userDictionary["location"] as? String
+
+        numTweets = userDictionary["statusesCount"] as? Int
+        friendsCount = userDictionary["friendsCount"] as? Int
+        followersCount = userDictionary["followersCount"] as? Int
     }
 
     class var currentUser: TwitterUser? {
