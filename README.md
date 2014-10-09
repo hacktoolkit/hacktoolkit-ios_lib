@@ -21,3 +21,11 @@ Currently, CocoaPods does not support Swift source files. To use, add this proje
 * [Yelp Client](https://github.com/hacktoolkit/htk-ios-Yelp)
 * [Rotten Tomatoes Client](https://github.com/hacktoolkit/htk-ios-RottenTomatoes)
 * [Tip Calculator](https://github.com/hacktoolkit/htk-ios-TipCalculator)
+
+## License
+
+* For `hacktoolkit-ios_lib` see `LICENSE`
+* The Font Awesome font is licensed under the SIL OFL 1.1:
+  * <http://scripts.sil.org/OFL>
+* Font Awesome by Dave Gandy - <http://fontawesome.io>
+  * Full details: <http://fontawesome.io/license>
