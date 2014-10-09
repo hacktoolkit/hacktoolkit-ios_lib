@@ -10,6 +10,10 @@ Currently, CocoaPods does not support Swift source files. To use, add this proje
   * `Add Files to "YOURPROJECT"...`
   * Navigate to and select `htk/Hacktoolkit`
   * Select `Create groups` for added folders radio
+* After the initial setup, future updates can be done like so:
+  * `cd htk`
+  * `git pull`
+  * `git submodule update --init` (`--init` can be left off after the initial update)
 
 ## Requirements
 
@@ -17,6 +21,7 @@ Currently, CocoaPods does not support Swift source files. To use, add this proje
 
 ## Sample Projects using Hacktoolkit for iOS
 
+* [Pkkup](https://github.com/pkkup/Pkkup-iOS)
 * [Twitter Client](https://github.com/hacktoolkit/htk-ios-Twitter)
 * [Yelp Client](https://github.com/hacktoolkit/htk-ios-Yelp)
 * [Rotten Tomatoes Client](https://github.com/hacktoolkit/htk-ios-RottenTomatoes)
