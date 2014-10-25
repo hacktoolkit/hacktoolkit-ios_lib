@@ -22,7 +22,7 @@ class HTKImageUtils {
     }
 
     func displayImageUrl(imageUrl: String, imageView: UIImageView) {
-        var urlRequest = NSURLRequest(URL: NSURL(string: imageUrl))
+        var urlRequest = NSURLRequest(URL: NSURL(string: imageUrl)!)
         imageView.setImageWithURLRequest(
             urlRequest,
             placeholderImage: nil,
@@ -44,7 +44,7 @@ class HTKImageUtils {
 
     class func getLocalImage(resource: String, ofType imageType: String) -> UIImage {
         var imagePath = NSBundle.mainBundle().pathForResource(resource, ofType: imageType)
-        var image = UIImage(contentsOfFile: imagePath!)
+        var image = UIImage(contentsOfFile: imagePath!)!
         return image
     }
 }

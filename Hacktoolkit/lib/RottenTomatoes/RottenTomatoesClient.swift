@@ -29,7 +29,7 @@ class RottenTomatoesClient {
         case .DVDs:
             apiUrl = ROTTEN_TOMATOES_API_TOP_RENTALS_URL
         }
-        let request = NSMutableURLRequest(URL: NSURL.URLWithString(apiUrl))
+        let request = NSMutableURLRequest(URL: NSURL(string: apiUrl)!)
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler: { (response, data, error) in
             var errorValue: NSError? = nil
             let parsedResult: AnyObject? = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: &errorValue)

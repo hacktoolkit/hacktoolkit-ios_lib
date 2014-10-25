@@ -32,7 +32,7 @@ class GitHubClient {
         // temporarily include App key to increase rate limit
         // https://developer.github.com/v3/#increasing-the-unauthenticated-rate-limit-for-oauth-applications
         apiUrl = "\(apiUrl)?client_id=\(GITHUB_API_CONSUMER_KEY)&client_secret=\(GITHUB_API_CONSUMER_SECRET)"
-        let request = NSMutableURLRequest(URL: NSURL.URLWithString(apiUrl))
+        let request = NSMutableURLRequest(URL: NSURL(string: apiUrl)!)
         NSLog("Hitting API: \(apiUrl)")
 
         var cachedResult: AnyObject? = cache[apiUrl]

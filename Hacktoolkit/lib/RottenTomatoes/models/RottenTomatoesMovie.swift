@@ -61,7 +61,7 @@ class RottenTomatoesMovie {
     }
 
     func displayThumbnailPosterIn(imageView: UIImageView) {
-        var urlRequest = NSURLRequest(URL: NSURL(string: self.thumbnailPosterUrl))
+        var urlRequest = NSURLRequest(URL: NSURL(string: self.thumbnailPosterUrl)!)
         imageView.setImageWithURLRequest(
             urlRequest,
             placeholderImage: nil,
@@ -78,7 +78,7 @@ class RottenTomatoesMovie {
     }
 
     func displayOriginalPosterIn(imageView: UIImageView) {
-        var urlRequest = NSURLRequest(URL: NSURL(string: self.originalPosterUrl))
+        var urlRequest = NSURLRequest(URL: NSURL(string: self.originalPosterUrl)!)
         imageView.setImageWithURLRequest(
             urlRequest,
             placeholderImage: self.getImageFromCache(self.thumbnailPosterUrl),

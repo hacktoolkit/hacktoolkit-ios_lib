@@ -29,7 +29,7 @@ class HTKUtils {
     class func formatCurrency(amount: Double) -> String {
         var numberFormatter = NSNumberFormatter()
         numberFormatter.numberStyle = NSNumberFormatterStyle.CurrencyStyle
-        var formattedAmount = numberFormatter.stringFromNumber(amount)
+        var formattedAmount = numberFormatter.stringFromNumber(amount)!
         return formattedAmount
     }
 

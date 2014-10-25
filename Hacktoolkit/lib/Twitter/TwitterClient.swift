@@ -49,7 +49,7 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
     class var sharedInstance : TwitterClient {
         struct Static {
             static let instance = TwitterClient(
-                baseURL: NSURL(string: TWITTER_API_BASE_URL),
+                baseURL: NSURL(string: TWITTER_API_BASE_URL)!,
                 consumerKey: TWITTER_API_CONSUMER_KEY,
                 consumerSecret: TWITTER_API_CONSUMER_SECRET
             )
@@ -105,7 +105,7 @@ class TwitterClient: BDBOAuth1RequestOperationManager {
                 (requestToken: BDBOAuthToken!) -> Void in
                 NSLog("Got the request token")
                 var authURL = NSURL(string: "https://api.twitter.com/oauth/authorize?oauth_token=\(requestToken.token)")
-                UIApplication.sharedApplication().openURL(authURL)
+                UIApplication.sharedApplication().openURL(authURL!)
             }, failure: {
                 (error: NSError!) -> Void in
                 NSLog("Error getting the request token: \(error)")
